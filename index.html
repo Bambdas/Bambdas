@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RW9H3YL1G1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-RW9H3YL1G1');
+</script>
+
+    <meta charset="UTF-8">
+    <title>Burp Bambdas Menu Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/clike/clike.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #toolbox, #canvas {
+            border: 1px solid #ccc;
+            min-height: 400px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #toolbox {
+            width: 30%;
+            float: left;
+            margin-right: 5%;
+        }
+
+        #canvas {
+            width: 65%;
+            float: left;
+        }
+
+        #code {
+            clear: both;
+            margin-top: 20px;
+        }
+
+        .draggable {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e3e3e3;
+            cursor: move;
+            border-radius: 4px;
+        }
+
+        .menu-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #d9edf7;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .submenu-item {
+            padding: 10px;
+            margin: 5px 0 5px 20px;
+            background-color: #f2dede;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .delete-button, .edit-button, .add-submenu-button {
+            position: absolute;
+            top: 5px;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            right: 5px;
+            color: red;
+        }
+
+        .edit-button {
+            right: 35px;
+            color: green;
+        }
+
+        .add-submenu-button {
+            right: 65px;
+            color: blue;
+        }
+
+        #copy-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #copy-button:hover {
+            background-color: #3071E8;
+        }
+
+        #copy-button:active {
+            background-color: #2858C9;
+        }
+
+        .author-line {
+            clear: both;
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .author-line a {
+            color: #4285F4;
+            text-decoration: none;
+        }
+
+        .author-line a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 800px) {
+            #toolbox, #canvas {
+                width: 100%;
+                float: none;
+                margin-right: 0;
+                min-height: 200px;
+            }
+
+            .draggable, .menu-item, .submenu-item {
+                font-size: 18px;
+                padding: 15px;
+            }
+
+            .delete-button, .edit-button, .add-submenu-button {
+                top: 10px;
+                font-size: 18px;
+            }
+
+            .delete-button {
+                right: 10px;
+            }
+
+            .edit-button {
+                right: 50px;
+            }
+
+            .add-submenu-button {
+                right: 90px;
+            }
+
+            #copy-button {
+                width: 100%;
+                font-size: 18px;
+            }
+
+            .author-line {
+                font-size: 14px;
+            }
+        }
+    </style>
+    <script>
+        var correctUsername = 'weiner';
+        var correctPassword = 'peter';
+
+        var credentials = prompt('Enter username:password');
+
+        if (credentials === correctUsername + ':' + correctPassword) {
+            document.documentElement.style.display = 'block';
+        } else {
+            window.location.href = 'https://bugbounty.zip';
+        }
+    </script>
+    <style>
+        html {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Burp Bambdas Menu Builder</h1>
+    <p>Drag elements from the toolbox to the canvas to design your script.</p>
+
+    <div id="toolbox">
+        <h2>Toolbox</h2>
+        <div class="draggable" data-type="main-menu">Add Main Menu</div>
+        <div class="draggable" data-type="menu">Add Submenu</div>
+    </div>
+
+    <div id="canvas">
+        <h2>Canvas</h2>
+    </div>
+
+    <div id="code">
+        <h2>Generated Script</h2>
+        <textarea id="code-editor"></textarea>
+        <button id="copy-button"><i class="fa fa-copy"></i> Copy Script</button>
+    </div>
+
+    <div class="author-line">
+        By <a href="https://x.com/tur24tur" target="_blank">Tur24Tur</a> / <a href="https://bugbounty.zip" target="_blank">BugBountyZip</a>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $(".draggable").draggable({
+            helper: "clone",
+            revert: "invalid"
+        });
+
+        $("#canvas").droppable({
+            accept: ".draggable",
+            drop: function(event, ui) {
+                var type = ui.draggable.data("type");
+                if (type === "main-menu") {
+                    addMainMenu();
+                } else if (type === "menu") {
+                    addSubmenu();
+                }
+            }
+        });
+
+        function addMainMenu() {
+            if ($(".main-menu-item").length > 0) {
+                alert("Main menu already exists. You can edit it or add submenus.");
+                return;
+            }
+            var menuName = "YourMenu";
+            var $menuItem = $("<div class='menu-item main-menu-item'>" + menuName +
+                "<span class='add-submenu-button' title='Add Submenu'>[+]</span>" +
+                "<span class='edit-button' title='Edit'>[e]</span>" +
+                "<span class='delete-button' title='Delete'>[x]</span>" +
+                "</div>");
+            $("#canvas").append($menuItem);
+            bindMenuEvents($menuItem);
+            generateCode();
+        }
+
+        function addSubmenu() {
+            var $mainMenu = $(".main-menu-item");
+            if ($mainMenu.length === 0) {
+                alert("Please add a main menu first.");
+                return;
+            }
+            addSubmenuToMenu($mainMenu);
+        }
+
+        function addSubmenuToMenu($menuItem) {
+            var submenuName = "Submenu";
+            var $submenuItem = $("<div class='submenu-item'>" + submenuName +
+                "<span class='edit-button' title='Edit'>[e]</span>" +
+                "<span class='delete-button' title='Delete'>[x]</span>" +
+                "</div>");
+            $submenuItem.insertAfter($menuItem.nextAll(".submenu-item:last").last().length > 0 ? $menuItem.nextAll(".submenu-item:last").last() : $menuItem);
+            bindSubmenuEvents($submenuItem);
+            generateCode();
+        }
+
+        function bindMenuEvents($menuItem) {
+            $menuItem.find(".delete-button").click(function() {
+                $menuItem.nextUntil(".menu-item").remove(); // Remove submenus
+                $menuItem.remove();
+                generateCode();
+            });
+
+            $menuItem.find(".edit-button").click(function() {
+                var currentName = $menuItem.contents().get(0).nodeValue.trim();
+                var newName = prompt("Enter new menu name:", currentName);
+                if (newName) {
+                    $menuItem.contents().get(0).nodeValue = newName + " ";
+                    generateCode();
+                }
+            });
+
+            $menuItem.find(".add-submenu-button").click(function() {
+                addSubmenuToMenu($menuItem);
+            });
+        }
+
+        function bindSubmenuEvents($submenuItem) {
+            $submenuItem.find(".delete-button").click(function() {
+                $submenuItem.remove();
+                generateCode();
+            });
+
+            $submenuItem.find(".edit-button").click(function() {
+                var currentName = $submenuItem.contents().get(0).nodeValue.trim();
+                var newName = prompt("Enter new submenu name:", currentName);
+                if (newName) {
+                    $submenuItem.contents().get(0).nodeValue = newName + " ";
+                    generateCode();
+                }
+            });
+        }
+
+        function generateCode() {
+            var code = '';
+            code += '/**\n';
+            code += ' * Add your Bambda Description here\n';
+            code += ' * @author Write your name here\n';
+            code += ' * Built With Burp Suite Menu Builder V1 2024 14 September\n';
+            code += ' **/\n\n';
+
+            code += '// Declare the global variables outside the main code block\n';
+            code += 'boolean started = false;\n';
+            code += '{\n\n';
+
+            code += '    // Declare mainMenuName inside the code block\n';
+            code += '    String mainMenuName = "' + getMainMenuName() + '";\n\n';
+
+            code += '    // Check if the script has already run\n';
+            code += '    if (started) {\n';
+            code += '        return true;\n';
+            code += '    }\n\n';
+
+            code += '    // Get all windows and frames in the application\n';
+            code += '    java.awt.Window[] windows = java.awt.Window.getWindows();\n';
+            code += '    boolean menuAdded = false;\n\n';
+
+            code += '    // Define your classes and methods here\n';
+            code += '    // ...\n\n';
+
+            code += '    // Add the menu after the classes have been defined\n';
+            code += '    for (java.awt.Window window : windows) {\n';
+            code += '        if (window instanceof java.awt.Container) {\n';
+            code += '            java.util.Stack<java.awt.Container> stack = new java.util.Stack<>();\n';
+            code += '            stack.push((java.awt.Container) window);\n\n';
+            code += '            while (!stack.isEmpty()) {\n';
+            code += '                java.awt.Container container = stack.pop();\n';
+            code += '                java.awt.Component[] components = container.getComponents();\n\n';
+            code += '                for (java.awt.Component component : components) {\n';
+            code += '                    if (component instanceof javax.swing.JMenuBar) {\n';
+            code += '                        javax.swing.JMenuBar menuBar = (javax.swing.JMenuBar) component;\n\n';
+            code += '                        // Check if the menu already exists\n';
+            code += '                        boolean menuExists = false;\n';
+            code += '                        int menuCount = menuBar.getMenuCount();\n';
+            code += '                        for (int i = 0; i < menuCount; i++) {\n';
+            code += '                            javax.swing.JMenu menu = menuBar.getMenu(i);\n';
+            code += '                            if (menu.getText().equals(mainMenuName)) {\n';
+            code += '                                menuExists = true;\n';
+            code += '                                break;\n';
+            code += '                            }\n';
+            code += '                        }\n\n';
+            code += '                        // Only add the menu if it doesn\'t already exist\n';
+            code += '                        if (!menuExists) {\n';
+            code += '                            // Build your menu here\n';
+            code += generateMenuCode();
+            code += '                            menuBar.revalidate();\n';
+            code += '                            menuBar.repaint();\n';
+            code += '                        }\n';
+            code += '                        menuAdded = true;\n';
+            code += '                        break;\n';
+            code += '                    }\n\n';
+            code += '                    if (component instanceof java.awt.Container) {\n';
+            code += '                        stack.push((java.awt.Container) component);\n';
+            code += '                    }\n';
+            code += '                }\n\n';
+            code += '                if (menuAdded) {\n';
+            code += '                    break;\n';
+            code += '                }\n';
+            code += '            }\n';
+            code += '        }\n\n';
+            code += '        if (menuAdded) {\n';
+            code += '            break;\n';
+            code += '        }\n';
+            code += '    }\n\n';
+
+            code += '    // Mark that the script has run\n';
+            code += '    started = true;\n\n';
+            code += '    // Return true to indicate successful execution\n';
+            code += '    return true;\n';
+            code += '}\n';
+
+            codeEditor.setValue(code);
+        }
+
+        function generateMenuCode() {
+            var code = '';
+            var $mainMenu = $(".main-menu-item");
+            if ($mainMenu.length === 0) {
+                return code;
+            }
+            var mainMenuName = $mainMenu.contents().get(0).nodeValue.trim();
+            var mainMenuVarName = sanitizeVariableName(mainMenuName);
+            code += '                            javax.swing.JMenu ' + mainMenuVarName + ' = new javax.swing.JMenu("' + mainMenuName + '");\n';
+
+            var $next = $mainMenu.next();
+            while ($next.hasClass("submenu-item")) {
+                var submenuName = $next.contents().get(0).nodeValue.trim();
+                var submenuVarName = sanitizeVariableName(submenuName);
+                code += '                            javax.swing.JMenuItem ' + submenuVarName + ' = new javax.swing.JMenuItem("' + submenuName + '");\n';
+                code += '                            ' + submenuVarName + '.addActionListener(e -> {\n';
+                code += '                                // Your logic here\n';
+                code += '                            });\n';
+                code += '                            ' + mainMenuVarName + '.add(' + submenuVarName + ');\n';
+
+                $next = $next.next();
+            }
+
+            code += '                            menuBar.add(' + mainMenuVarName + ');\n';
+            return code;
+        }
+
+        // Helper function to sanitize variable names
+        function sanitizeVariableName(name) {
+            return name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+        }
+
+        // Function to get the main menu name
+        function getMainMenuName() {
+            var $mainMenu = $(".main-menu-item");
+            if ($mainMenu.length === 0) {
+                return "YourMenu";
+            }
+            return $mainMenu.contents().get(0).nodeValue.trim();
+        }
+
+        var codeEditor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+            lineNumbers: true,
+            mode: "text/x-java",
+            readOnly: false  // Set to false to make the editor editable
+        });
+
+        generateCode();
+
+        // Copy code to clipboard
+        $('#copy-button').click(function() {
+            var code = codeEditor.getValue();
+            navigator.clipboard.writeText(code).then(function() {
+                alert('Script copied to clipboard!');
+            }, function(err) {
+                alert('Could not copy script: ', err);
+            });
+        });
+
+        $('#canvas').on('DOMSubtreeModified', function() {
+            generateCode();
+        });
+    });
+</script>
+
+</body>
+</html>
